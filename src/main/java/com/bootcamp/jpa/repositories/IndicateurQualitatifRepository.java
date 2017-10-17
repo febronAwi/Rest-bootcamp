@@ -5,7 +5,6 @@
  */
 package com.bootcamp.jpa.repositories;
 
-import com.bootcamp.jpa.entities.IndicateurPerformance;
 import com.bootcamp.jpa.entities.IndicateurQualitatif;
 
 public class IndicateurQualitatifRepository extends BaseRepository<IndicateurQualitatif>{

@@ -14,28 +14,28 @@ public class Programme implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull(message="l'attribut nom doit ètre renseigné")
+    @NotNull(message="l'attribut nom doit ï¿½tre renseignï¿½")
     @Column(length = 35)
     private String nom;
     
-    @NotNull(message="l'attribut objectif doit ètre renseigné")
+    @NotNull(message="l'attribut objectif doit ï¿½tre renseignï¿½")
     @Column(length = 120)
     private String objectif;
     
-    @NotNull(message="l'attribut dateDebut doit ètre renseigné")
+    @NotNull(message="l'attribut dateDebut doit ï¿½tre renseignï¿½")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dateDeDebut;
     
-    @NotNull(message="l'attribut dateFin doit ètre renseigné")
+    @NotNull(message="l'attribut dateFin doit ï¿½tre renseignï¿½")
     @Column(length = 20)
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dateDeFin;
     
-    @NotNull(message="l'attribut fond doit ètre renseigné")
+    @NotNull(message="l'attribut fond doit ï¿½tre renseignï¿½")
     @Column(scale =2 )
     private double budgetPrevisionnel;
     
-    @NotNull(message="l'attribut budgetEffectif doit ètre renseigné")
+    @NotNull(message="l'attribut budgetEffectif doit ï¿½tre renseignï¿½")
     @Column(scale = 2)
     private double budgetEffectif;
     
@@ -149,6 +149,11 @@ public class Programme implements Serializable{
 
     public void setBeneficiaires(List<BeneficiaireProgramme> beneficiaires) {
         this.beneficiaires = beneficiaires;
+    }
+
+    @Override
+    public String toString() {
+        return "Programme{" + "id=" + id + ", nom=" + nom + ", objectif=" + objectif + ", dateDeDebut=" + dateDeDebut + ", dateDeFin=" + dateDeFin + ", budgetPrevisionnel=" + budgetPrevisionnel + ", budgetEffectif=" + budgetEffectif + ", projets=" + projets + ", indicateurPerformance=" + indicateurPerformance + ", bailleurs=" + bailleurs + ", fournisseurs=" + fournisseurs + ", beneficiaires=" + beneficiaires + '}';
     }
     
 }

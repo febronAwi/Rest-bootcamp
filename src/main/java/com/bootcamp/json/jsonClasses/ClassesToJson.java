@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.bootcamp.jpa.jsonClasses;
+package com.bootcamp.json.jsonClasses;
 
 import com.bootcamp.jpa.entities.Bailleur;
 import com.bootcamp.jpa.entities.Beneficiaire;
@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  *
- * @author edwigegédéon
+ * @author edwigegï¿½dï¿½on
  */
 public class ClassesToJson {
         

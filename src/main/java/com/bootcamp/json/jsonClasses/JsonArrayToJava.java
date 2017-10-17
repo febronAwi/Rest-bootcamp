@@ -1,4 +1,4 @@
-package com.bootcamp.jpa.jsonClasses;
+package com.bootcamp.json.jsonClasses;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  *
- * @author edwigegédéon
+ * @author edwigegï¿½dï¿½on
  * @param <T>
  */
 public class JsonArrayToJava<T> {

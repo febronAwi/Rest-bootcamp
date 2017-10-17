@@ -55,6 +55,18 @@ public class BaseRepository<T>{
             return result;
         }
     
+    public T findById(long value) throws SQLException {
+           
+            String className = entityClass.getSimpleName(); 
+            String str = "select obj from "+ className+ " obj where obj.id=:param";
+            Query query = getEntityManager().createQuery(str);
+            query.setParameter("param", value);
+
+             List<T> result = query.getResultList();
+          
+            return result.get(0);
+        }
+    
     public List<T> findAll(){
         
             String className = entityClass.getSimpleName(); 

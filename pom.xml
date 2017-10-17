@@ -19,6 +19,11 @@
     
     <!-- DEPENDENCES OF JERSEY SERVER-->
     <dependency>
+           <groupId>com.sun.jersey</groupId>
+           <artifactId>jersey-json</artifactId>
+           <version>1.8</version>
+       </dependency>
+    <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
             <version>${jersey.version}</version>
@@ -37,7 +42,7 @@
         </dependency>
         
         <!-- FROM  TpJPA   -->
-            <dependency>
+    <dependency>
       <groupId>org.eclipse.persistence</groupId>
       <artifactId>org.eclipse.persistence.jpa</artifactId>
       <version>2.7.0</version>
@@ -66,14 +71,6 @@
       <artifactId>derbyclient</artifactId>
       <version>10.13.1.1</version>
     </dependency>
-        
-    <!-- https://mvnrepository.com/artifact/org.json/json -->
-<dependency>
-
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
-      <version>20170516</version>
-  </dependency>
   
   <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
 <dependency>
@@ -87,29 +84,33 @@
       <version>2.9.0</version>
       <type>jar</type>
     </dependency>
+    
   </dependencies>
-  <properties>
-        <jersey.version>1.18.1</jersey.version>
-    </properties>
+  
+  
+  
   <build>
     <finalName>RESTfulExample</finalName>
 
         <plugins>
-
             <plugin>
-
                 <artifactId>maven-compiler-plugin</artifactId>
-
                 <configuration>
-
                     <source>1.6</source>
-
                     <target>1.6</target>
-
                 </configuration>
-
             </plugin>
-
+             <plugin>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>${jettyVersion}</version>
+            </plugin>
         </plugins>
   </build>
+  
+  <properties>
+        <jersey.version>1.8</jersey.version>
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+         <jettyVersion>9.2.6.v20141205</jettyVersion>
+    </properties>
 </project>
