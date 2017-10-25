@@ -17,23 +17,25 @@ import java.util.List;
  * @param <T>
  */
 public class JsonArrayToJava<T> {
-
-    File file;
-    public JsonArrayToJava(File file) {
-        this.file = file;
-    }
     
-    
-    public List<T> converteJsonArrayToObject(Object obj) throws IOException{
-           Class c = obj.getClass();
+    public List<T> converteJsonArrayToObject(File file,Object obj) throws IOException{
         //INSTANCIATION DE ObjectMapper
     ObjectMapper om = new ObjectMapper(); 
     
-         List<T> list = om.readValue(this.file,
+         List<T> list = om.readValue(file,
         TypeFactory.defaultInstance().constructCollectionType(List.class,  
        obj.getClass()) );
          
          return list;
     }
-   
+    /*
+    public T converteJsonToObject(File file,Object obj) throws IOException{
+        //INSTANCIATION DE ObjectMapper
+    ObjectMapper om = new ObjectMapper(); 
+    
+         T result = om.readValue(file, obj.getClass());
+         
+         return result;
+    }
+   */
 }

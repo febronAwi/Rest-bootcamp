@@ -11,15 +11,15 @@ public class IndicateurQualitatif implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull(message="l'attribut nom doit ètre renseigné")
+    @NotNull(message="l'attribut nom doit ï¿½tre renseignï¿½")
     @Column(length = 25)
     private String nom;
     
-    @NotNull(message="l'attribut propriete doit ètre renseigné")
+    @NotNull(message="l'attribut propriete doit ï¿½tre renseignï¿½")
     @Column(length = 20)
     private String propriete;
     
-    @NotNull(message="l'attribut valeur doit ètre renseigné")
+    @NotNull(message="l'attribut valeur doit ï¿½tre renseignï¿½")
     @Column(length = 20)
     private String valeur;
     
@@ -66,6 +66,5 @@ public class IndicateurQualitatif implements Serializable{
     public void setIndicateurPerformance(IndicateurPerformance indicateurPerformance) {
         this.indicateurPerformance = indicateurPerformance;
     }
-    
     
 }

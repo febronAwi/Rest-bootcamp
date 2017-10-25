@@ -24,7 +24,7 @@ public class BailleurProgramme implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotNull(message="l'attribut fond doit ètre renseigné")
+    @NotNull(message="l'attribut fond doit etre renseigne")
     @Column(scale = 2)
     private double fond;
     

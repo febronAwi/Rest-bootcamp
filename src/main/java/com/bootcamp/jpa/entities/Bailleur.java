@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 public class Bailleur extends Personne{
     
     @Enumerated(EnumType.STRING)
-    @NotNull(message="le type doit ètre défini")
+    @NotNull(message="le type doit etre defini")
     private TypeBailleur typeBailleur;
     @ManyToMany(mappedBy = "bailleurs")
     private List<Projet> projets = new ArrayList<Projet>();

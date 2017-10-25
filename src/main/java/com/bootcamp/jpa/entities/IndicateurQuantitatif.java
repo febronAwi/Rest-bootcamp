@@ -1,6 +1,8 @@
 package com.bootcamp.jpa.entities;
 
+import com.bootcamp.jpa.repositories.IndicateurQuantitatifRepository;
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -11,15 +13,15 @@ public class IndicateurQuantitatif implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull(message="l'attribut nom doit ètre renseigné")
+    @NotNull(message="l'attribut nom doit ï¿½tre renseignï¿½")
     @Column(length = 25)
     private String nom;
     
-    @NotNull(message="l'attribut propriete doit ètre renseigné")
+    @NotNull(message="l'attribut propriete doit ï¿½tre renseignï¿½")
      @Column(length = 20)
     private String propriete;
     
-    @NotNull(message="l'attribut valeur doit ètre renseigné")
+    @NotNull(message="l'attribut valeur doit ï¿½tre renseignï¿½")
      @Column(length = 20)
     private int valeur;
     @ManyToOne(fetch = FetchType.LAZY)

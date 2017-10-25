@@ -12,22 +12,22 @@ public class IndicateurPerformance implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull(message="l'attribut libelle doit ètre renseigné")
+    @NotNull(message="l'attribut libelle doit etre renseigne")
     @Column(length = 20)
     private String libelle;
     
-    @NotNull(message="l'attribut nature doit ètre renseigné")
+    @NotNull(message="l'attribut nature doit etre renseigne")
      @Column(length = 20)
     private String nature;
     
-    @NotNull(message="l'attribut valeur doit ètre renseigné")
+    @NotNull(message="l'attribut valeur doit etre renseigne")
      @Column(length = 20)
     private String valeur;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "indicateurPerformance")
     private List<IndicateurQualitatif> indicateurQualitatifs;
     
-    @OneToMany(mappedBy = "indicateurPerformance")
+    @OneToMany(cascade = CascadeType.ALL,mappedBy = "indicateurPerformance")
     private List<IndicateurQuantitatif> indicateurQuantitatifs;
 
     public Long getId() {

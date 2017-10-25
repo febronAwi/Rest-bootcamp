@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  *
- * @author edwigegédéon
+ * @author edwigegedeon
  */
 @Entity
 @Table(name = "tp_beneficiaire_has_programme")
@@ -30,7 +30,7 @@ public class BeneficiaireProgramme implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
      
-    @NotNull(message="l'attribut typeBeneficiaire doit ètre renseigné")
+    @NotNull(message="l'attribut typeBeneficiaire doit etre renseigne")
     @Column(length = 20)
      private String typeBenefice;
 

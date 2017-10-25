@@ -5,10 +5,13 @@
  */
 package com.bootcamp.jpa.entities;
 
+import com.bootcamp.jpa.enums.RolesPersonne;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,9 +29,15 @@ public abstract class Personne implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
    
-    @NotNull(message="l'attribut nom doit ètre renseigné")
+    @NotNull(message="l'attribut nom doit etre renseigne")
     @Column(length = 30)
     private String nom;
+    
+    @Enumerated(EnumType.STRING)
+    private RolesPersonne roles;
+    
+    @Column(length = 15, nullable = true)
+    private String pwd;
     
     public Long getId() {
         return id;
@@ -45,6 +54,23 @@ public abstract class Personne implements Serializable{
     public void setNom(String nom) {
         this.nom = nom;
     }
+
+    public RolesPersonne getRoles() {
+        return roles;
+    }
+
+    public void setRoles(RolesPersonne roles) {
+        this.roles = roles;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
+    }
+    
     
     
 }

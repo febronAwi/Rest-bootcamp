@@ -24,175 +24,40 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import static javafx.scene.input.KeyCode.T;
 
 /**
  *
  * @author edwigeg�d�on
  */
-public class ClassesToJson {
+public class ClassesToJson<T> {
         
     //INSTANCIATION DE ObjectMapper
     ObjectMapper om = new ObjectMapper(); 
     
     // Methode qui prend le nom du fichier selon la classe et retourne l'objet de type File
-    public File generateFile(String fileName){
+    public static File generateFile(String fileName){
         File file = new File("JsonFolder/".concat(fileName));
         return file;
     }
     
+    private final Class entityClass;
+    public String className;
     
-    // Bailleur Json
-    public void jsonBailleur() throws SQLException, IOException{
-        
-        //INSTANCIATION de Bailleurs
-        Bailleur bailleur = new Bailleur();
-        Bailleur b = new Bailleur();
-        
-        // CREATION D'UN BAILLEURS
-        bailleur.setNom("jsonBailleur0");
-        bailleur.setTypeBailleur(TypeBailleur.GOUVERNEMENT);   
-        BailleurRepository br = new BailleurRepository("tpJpa-mysql");
-        
-        b.setNom("jsonbailleur1");
-        
-        
-        //br.create(bailleur);
-        //br.create(b);
-        
-        List<Bailleur> bl = new ArrayList<Bailleur>();
-              
-         bl.add(bailleur);
-         bl.add(b);
-        // CREATION DE PLUSIEURS OBJETS DANS LE FICHIER bailleur.json
-            // SERIALIZATION 
-         File file = generateFile("bailleur.json");
-        om.writeValue(file, bl);
-        System.out.println("FICHIER  BIEN  CREER");
-        
-        
-        // DESEREALIZATION D'UN ARRAYJSON
-        
-        JsonArrayToJava jaj = new JsonArrayToJava<Bailleur>(generateFile("bailleur.json"));
-        List<Bailleur> list = jaj.converteJsonArrayToObject(b);
-        
-        System.out.println(list.get(0).getNom());
-        System.out.println(list.get(1).getNom());
-          
+    public ClassesToJson(Class c) {
+        this.entityClass = c;
+        this.className = entityClass.getSimpleName();
     }
-  
-    // Beneficiaire et Json
-   public void jsonBeneficiaire() throws SQLException, IOException{
-               //INSTANCIATION Beneficiaire
-        Beneficiaire b = new Beneficiaire();
-        
-        // CREATION D'UN BAILLEUR
-        b.setNom("jsonBeneficiairer0");
-        BeneficiaireRepository br = new BeneficiaireRepository("tpJpa-mysql");
-        br.create(b);
-        
-        // CREATION DE L'OBJET DANS LE FICHIER bailleur.json
-            // SERIALIZATION
-        File file = generateFile("beneficiaire.json");
-        om.writeValue(file, b);
-        System.out.println("FICHIER  BIEN  CREER");
-        
-        // DESERIALIZATION
-        Beneficiaire newBeneficiaire = om.readValue(file, Beneficiaire.class );
-        System.out.println("objet bien forme");
-        String nom = newBeneficiaire.getNom();
-         System.out.println("Nom: "+nom);
-   }
    
-   // fournissuer and json
-   public void jsonFournisseur() throws SQLException, IOException{
-       //INSTANCIATION de Fournisseur
-        Fournisseur f = new Fournisseur();
-        
-        // CREATION D'UN BAILLEUR
-        f.setNom("jsonFournisseur0");
-        FournisseurRepository fr = new FournisseurRepository("tpJpa-mysql");
-        fr.create(f);
-        
-        // CREATION DE L'OBJET DANS LE FICHIER bailleur.json
-            // SERIALIZATION
-         File file = generateFile("fournisseur.json");
-        om.writeValue(file, f);
-        System.out.println("FICHIER  BIEN  CREER");
-        
-        // DESERIALIZATION
-        Fournisseur newBailleur = om.readValue(file, Fournisseur.class );
-        System.out.println("objet bien forme");
-        String nom = newBailleur.getNom();
-        System.out.println("Nom: "+nom);
-        
-   }
    
-   // indicateur and json
-   public void jsonIndicateur() throws SQLException, IOException{
-        //INSTANCIATION de Bailleur
-        IndicateurPerformance indicateurPerformance = new IndicateurPerformance();
-        
-        // CREATION D'UN BAILLEUR
-        indicateurPerformance.setLibelle("jsonIndicateurPerformance0");  
-        IndicateurPerformanceRepository ir = new IndicateurPerformanceRepository("tpJpa-mysql");
-        ir.create(indicateurPerformance);
-        
-        // CREATION DE L'OBJET DANS LE FICHIER indicateurPerformance.json
-            // SERIALIZATION
-         File file = generateFile("indicateurPerformance.json");
-        om.writeValue(file, indicateurPerformance);
-        System.out.println("FICHIER  BIEN  CREER");
-        
-        // DESERIALIZATION
-        IndicateurPerformance newIndicateurPerformance = om.readValue(file, IndicateurPerformance.class );
-        System.out.println("objet bien forme");
-        String nom = newIndicateurPerformance.getLibelle();
-         System.out.println("Nom: "+nom);
-   }
-   
-   // programme and json
-   public void jsonProgramme() throws SQLException, IOException{
-       //INSTANCIATION de Bailleur
-        Programme programme = new Programme();
-        
-        // CREATION D'UN BAILLEUR
-        programme.setNom("jsonProgramme0");  
-        ProgrammeRepository gramr = new ProgrammeRepository("tpJpa-mysql");
-        gramr.create(programme);
-        
-        // CREATION DE L'OBJET DANS LE FICHIER programme.json
-            // SERIALIZATION
-         File file = generateFile("programme.json");
-        om.writeValue(file, programme);
-        System.out.println("FICHIER  BIEN  CREER");
-        
-        // DESERIALIZATION
-        Programme newProgramme = om.readValue(file, Programme.class );
-        System.out.println("objet bien forme");
-        String nom = newProgramme.getNom();
-         System.out.println("Nom: "+nom);
-   }
-   
-   public void jsonProjet() throws IOException, SQLException{
-       //INSTANCIATION de Bailleur
-        Projet projet = new Projet();
-        
-        // CREATION D'UN BAILLEUR
-        projet.setNom("jsonProjet0");
-        projet.setObjectif("win or win");
-        ProjetRepository pr = new ProjetRepository("tpJpa-mysql");
-        pr.create(projet);
+     public void convertObjectToJson(T ec) throws IOException, SQLException{
         
         // CREATION DE L'OBJET DANS LE FICHIER projet.json
             // SERIALIZATION
-         File file = generateFile("projet.json");
-        om.writeValue(file, projet);
+         File file = generateFile(className.toLowerCase()+".json");
+        om.writeValue(file, ec);
         System.out.println("FICHIER  BIEN  CREER");
         
-        // DESERIALIZATION
-        Projet newProjet = om.readValue(file, Projet.class );
-        System.out.println("objet bien forme");
-        String nom = newProjet.getNom();
-         System.out.println("Nom: "+nom);
    }
+        
 }
