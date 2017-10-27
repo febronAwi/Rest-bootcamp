@@ -14,27 +14,27 @@ public class Projet implements Serializable{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    @NotNull(message="l'attribut nom doit ètre renseigné")
+    @NotNull(message="l'attribut nom doit etre renseigne")
     @Column(length = 30)
     private String nom;
     
-    @NotNull(message="l'attribut objectif doit ètre renseigné")
+    @NotNull(message="l'attribut objectif doit etre renseigne")
     @Column(length = 120)
     private String objectif;
     
     @Temporal(javax.persistence.TemporalType.DATE)
-    @NotNull(message="l'attribut dateDebut doit ètre renseigné")
+    @NotNull(message="l'attribut dateDebut doit etre renseigne")
     private Date dateDeDebut;
     
-    @NotNull(message="l'attribut dateFin doit ètre renseigné")
+    @NotNull(message="l'attribut dateFin doit etre renseigne")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dateDeFin;
     
-    @NotNull(message="l'attribut fond doit ètre renseigné")
+    @NotNull(message="l'attribut fond doit etre renseigne")
     @Column(scale =2 )
     private double budgetPrevisionnel;
     
-    @NotNull(message="l'attribut budgetEffectif doit ètre renseigné")
+    @NotNull(message="l'attribut budgetEffectif doit etre renseigne")
     @Column(scale = 2)
     private double budgetEffectif;
     

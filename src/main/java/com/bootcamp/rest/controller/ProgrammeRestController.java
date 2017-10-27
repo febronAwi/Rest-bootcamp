@@ -1,34 +1,37 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.bootcamp.rest.controller;
 
-import com.bootcamp.jpa.entities.Personne;
 import com.bootcamp.jpa.entities.Programme;
-import com.bootcamp.jpa.repositories.PersonneRepository;
+import com.bootcamp.jpa.entities.User;
+import com.bootcamp.jpa.enums.RoleUser;
+import com.bootcamp.jpa.repositories.UserRepository;
 import com.bootcamp.jpa.repositories.ProgrammeRepository;
+import com.bootcamp.json.jsonClasses.ClassesToJson;
+import com.bootcamp.rest.exception.AuthentificationException;
+import com.bootcamp.rest.exception.NotCreateException;
 import com.bootcamp.rest.exception.SuccessMessage;
 import com.bootcamp.rest.exception.TokenNotGenerateException;
-import com.bootcamp.rest.exception.UserNotFoundException;
+import com.bootcamp.rest.exception.TokenVerifyException;
+import com.bootcamp.rest.exception.ReturnResponse;
+import com.bootcamp.rest.exception.UnknownException;
 import com.bootcamp.rest.security.JavaJsonWebToken;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.SQLException;
-//import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
-//import java.util.logging.Logger;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -38,100 +41,157 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 @Path("/programme")
 public class ProgrammeRestController {
-    PersonneRepository psnr = new  PersonneRepository("tpJpa-mysql");
+    
+    UserRepository ur = new  UserRepository("tpJpa-mysql");
     ProgrammeRepository pr = new ProgrammeRepository("tpJpa-mysql");
+    
     JavaJsonWebToken jt = new JavaJsonWebToken();
-
-    @GET
-    @Path("/all")
-    @Produces(MediaType.APPLICATION_JSON)//ou @Produces("application/json")
-    public Response getAllProrammes(@Context HttpHeaders headers) {
-        //MultivaluedMap<String,String> requestHeaders = headers.getRequestHeaders();
-        /*
-        try {
-            jt.parseJWT(token);
-            List<Programme> liste = pr.findAll();
-            return Response.status(200).entity("verification du token réusssie. Voici la liste "+liste).build();
-        } catch (Exception e) {
-            return Response.status(404).entity("Pas d'enregistrement !").build();
-            //e.printStackTrace();
-         }*/
-        Response resp =SuccessMessage.message("le header"+headers);
-        return resp;
-    }
-   
+    
+    List<Programme> liste = new ArrayList<Programme>();
+    
+    ObjectMapper om = new ObjectMapper();
+    
+    Response resp;
+    
+    ClassesToJson ctj = new ClassesToJson();
+    
+    private RoleUser role;
+    
     @POST
     @Path("/login")
     @Consumes("application/json")
-    public void findProgrammeById(Personne obj) throws SQLException {
-        String subject = obj.toString();
-       String iat = "1422779638",id = "1";
-       long tm = 300000;
+    public Response login(User obj) throws SQLException {  
+        String iat = "BootcampToken";
+        long tm = 900000; // 15 min
        
         try {
-            Personne psn = psnr.findByNomAndPwd(obj.getNom(), obj.getPwd());
+            User user = ur.findByLoginAndPwd(obj.getLogin(), obj.getPwd());
+            //
+            this.role = user.getRole();
+            
             try {
-            String token = jt.createJWT(iat, subject, tm);
-                SuccessMessage.message("Retenez bien ce token: "+token);
+                String subject = user.toString();
+                String token = jt.createJWT(iat, subject, tm);
+                resp = SuccessMessage.message("Retenez bien ce token: \n"+token);
         } catch (Exception e) {
-                TokenNotGenerateException.generateTokenException();
+                resp = TokenNotGenerateException.generateTokenException();
          }
         } catch (Exception e) {
-            UserNotFoundException.userNotFoundException();
+            resp = AuthentificationException.auth("Erreur lors de l'authentifiacation ! \n verifiez vos infos :  ",obj);
         }
-       
+       return resp;
     }
+    
+
+    @GET
+    @Path("/all")
+    public Response getAllProrammes( @HeaderParam("token") String token ) {
+        
+        try {
+            jt.parseJWT(token);
+            SuccessMessage.message("Token Valide");
+            try {
+                liste = pr.findAll();
+                
+                //conversion en string json
+                String json = ctj.simpleConvertObjectToJson(liste);
+                resp = ReturnResponse.object("",json);
+            } catch (Exception e) {
+            }
+            
+        } catch (Exception e) {
+            resp =TokenVerifyException.tokenException(e);
+         }
+        return resp;
+    }
+    
+   
     
     @POST
     @Path("/create")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(Programme programme) throws SQLException {
+    public Response create(Programme programme, @HeaderParam("token") String token ) throws SQLException {
+        //
         try {
-            pr.create(programme);
-            String output = "Bien creer";
-        return Response.status(200).entity(output).build();
+           jt.parseJWT(token);
+            //
+            if(this.role.equals(RoleUser.ADMIN))  {
+                //
+                 try {
+                
+                pr.create(programme);
+                resp=SuccessMessage.message("Bien cree");
+            } catch (Exception e) {
+                resp=NotCreateException.notCreateException("Erreur lors de la creation", e);
+            }
+            }else {
+              resp=AuthentificationException.auth("Token Valide\n Mais Vous n'etes pas autorise a creer une instance.  Desole !! \n",role);
+            }
+                                 
         } catch (Exception e) {
-            return Response.status(404).entity("Erreur lors de la creation").build();
-        }
+            resp =TokenVerifyException.tokenException(e);
+         }
+        return resp;
     }
 
     @PUT
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response update(Programme programme) throws SQLException {
+    public Response update(Programme programme,@HeaderParam("token") String token ) throws SQLException {
         try {
-            pr.update(programme);
-            return Response.status(200).entity("Mise à jour bien faite").build();
+            jt.parseJWT(token);
+            resp =SuccessMessage.message("Token Valide");
+            try {
+                pr.update(programme);
+                resp=SuccessMessage.message("Mise a jour bien faite");
+            } catch (Exception e) {
+                resp=NotCreateException.notCreateException("Erreur lors de la mise a jour", e);
+            }
+            
         } catch (Exception e) {
-            return Response.status(404).entity("Un probleme lors de la mise à jour").build();
-        }
+            resp =TokenVerifyException.tokenException(e);
+         }
         
+        return resp;
     }
     
     @DELETE
     @Path("/delete/{id}")
-    public Response delete(@PathParam("id") int valeur) throws SQLException {  
-        Programme p;     
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response delete(Programme programme, @PathParam("id") int valeur,@HeaderParam("token") String token ) throws SQLException {
         try {
-            p = pr.findById(valeur);
-            pr.delete(p);
-            return Response.status(200).entity("Le Programme d'id: "+valeur+" a bien été supprimé").build();
+           jt.parseJWT(token);
+            //
+            if(this.role.equals(RoleUser.ADMIN)) {
+                
+                try {
+                pr.findById(valeur);
+                pr.delete(programme);
+                resp=SuccessMessage.message("Le programme d'id "+valeur+" a bien ete supprime");
+            } catch (Exception e) {
+                resp=NotCreateException.notCreateException("Probleme lors de la suppression de programme d'id"+valeur,e);
+            }
+                
+            } else {
+           resp=AuthentificationException.auth("Token Valide \n Mais Vous n'etes pas autorise a Supprimer une instance.  Desole !! \n",role);
+            }         
         } catch (Exception e) {
-            return Response.status(404).entity("Un probleme lors de la suppression du programme d'id "+valeur).build();
-        }
+            resp =TokenVerifyException.tokenException(e);
+         }
         
+        return resp;    
     }
     
-     @GET
+    @GET
     @Path("/{id}")
-    @Produces("application/json")
-    public Response findProgrammeByFields(@PathParam("id") long id,@QueryParam("fields") String fields) throws SQLException, IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
-            
+    public Response findProgrammeByFields(@PathParam("id") long id,@QueryParam("fields") String fields,@HeaderParam("token") String token ) throws SQLException, IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
+        try {
+           jt.parseJWT(token);
+            try {
         Field[] fieldsProgramme = Programme.class.getDeclaredFields();
         
         String[] rempli = fields.split(",");
@@ -148,28 +208,41 @@ public class ProgrammeRestController {
            if (check(rempli, propertyDescriptor.getName())) {
                responseMap.put(propertyDescriptor.getName(), method.invoke(prog));
            }
-           //Logger log = new Logger();
                    
        }
-
-       return Response.status(200).entity(responseMap).header("Access-Control-Allow-Origin", "*").build();// header donne la liste des domaines outorisé à utiliser le service
+         // Concersion en string json
+         String json = ctj.simpleConvertObjectToJson(responseMap);
+         resp = ReturnResponse.object("", responseMap);
+                  
+            } catch (Exception e) {
+         resp=UnknownException.unknownException(e);
+            }
+            
+        } catch (Exception e) {
+         resp =TokenVerifyException.tokenException(e);
+         }    
         
+       return resp;        
     }
+    
      private boolean check(String[] fields, String field) {
 
-
-
        for (String field1 : fields) {
-
            if (field.equals(field1)) {
-
                return true;
-
            }
-
        }
-
        return false;
+   }    
 
-   }         
+//  E X P E R I M E N T A T I O N
+   
+    @GET
+    @Path("/list")
+    @Produces(MediaType.APPLICATION_JSON)//ou @Produces("application/json")
+    public Response getList() throws IOException, SQLException  {
+        liste = pr.findAll();
+        return Response.status(200).entity(ctj.simpleConvertObjectToJson(liste)).build();        
+    }
+    
     }

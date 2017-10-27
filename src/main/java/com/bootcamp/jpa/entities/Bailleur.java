@@ -14,11 +14,20 @@ public class Bailleur extends Personne{
     @Enumerated(EnumType.STRING)
     @NotNull(message="le type doit etre defini")
     private TypeBailleur typeBailleur;
+    
     @ManyToMany(mappedBy = "bailleurs")
     private List<Projet> projets = new ArrayList<Projet>();
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "bailleur")
     private List<BailleurProgramme> programmes = new ArrayList<BailleurProgramme>();  
+    
+    // consructeur
+
+    public Bailleur() {
+        this.setNom("nomParDefaut");
+        this.typeBailleur = TypeBailleur.GOUVERNEMENT;
+    }
+    
     
     public TypeBailleur getTypeBailleur() {
         return typeBailleur;

@@ -26,10 +26,6 @@ public class BailleurRepository extends BaseRepository<Bailleur> {
            query.setParameter("identifiant", id);
            return query.getResultList();
        }
-       /*
-       public void findBailleur(Object id){
-           Query query = getEntityManager().createNativeQuery("select * from tp_personne where tp_personne.ID =:id+");
-           query.getFirstResult();
-       }*/
+       
     }
 

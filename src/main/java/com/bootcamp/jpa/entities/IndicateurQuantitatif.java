@@ -13,15 +13,15 @@ public class IndicateurQuantitatif implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull(message="l'attribut nom doit �tre renseign�")
+    @NotNull(message="l'attribut nom doit etre renseigne")
     @Column(length = 25)
     private String nom;
     
-    @NotNull(message="l'attribut propriete doit �tre renseign�")
+    @NotNull(message="l'attribut propriete doit etre renseigne")
      @Column(length = 20)
     private String propriete;
     
-    @NotNull(message="l'attribut valeur doit �tre renseign�")
+    @NotNull(message="l'attribut valeur doit etre renseigne")
      @Column(length = 20)
     private int valeur;
     @ManyToOne(fetch = FetchType.LAZY)

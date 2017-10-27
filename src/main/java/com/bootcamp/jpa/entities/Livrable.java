@@ -12,15 +12,15 @@ public class Livrable implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull(message="l'attribut nom doit ètre renseigné")
+    @NotNull(message="l'attribut nom doit etre renseigne")
     @Column(length = 20)
     private String nom;
     
-    @NotNull(message="l'attribut dateDebut doit ètre renseigné")
+    @NotNull(message="l'attribut dateDebut doit etre renseigne")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dateDeDebut;
     
-    @NotNull(message="l'attribut dateFin doit ètre renseigné")
+    @NotNull(message="l'attribut dateFin doit etre renseigne")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dateDeFin;
     

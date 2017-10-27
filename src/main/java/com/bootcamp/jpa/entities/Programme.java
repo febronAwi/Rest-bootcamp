@@ -14,28 +14,28 @@ public class Programme implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotNull(message="l'attribut nom doit �tre renseign�")
+    @NotNull(message="l'attribut nom doit etre renseigne")
     @Column(length = 35)
     private String nom;
     
-    @NotNull(message="l'attribut objectif doit �tre renseign�")
+    @NotNull(message="l'attribut objectif doit etre renseigne")
     @Column(length = 120)
     private String objectif;
     
-    @NotNull(message="l'attribut dateDebut doit �tre renseign�")
+    @NotNull(message="l'attribut dateDebut doit etre renseigne")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dateDeDebut;
     
-    @NotNull(message="l'attribut dateFin doit �tre renseign�")
+    @NotNull(message="l'attribut dateFin doit etre renseigne")
     @Column(length = 20)
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date dateDeFin;
     
-    @NotNull(message="l'attribut fond doit �tre renseign�")
+    @NotNull(message="l'attribut fond doit etre renseigne")
     @Column(scale =2 )
     private double budgetPrevisionnel;
     
-    @NotNull(message="l'attribut budgetEffectif doit �tre renseign�")
+    @NotNull(message="l'attribut budgetEffectif doit etre renseigne")
     @Column(scale = 2)
     private double budgetEffectif;
     
@@ -54,7 +54,15 @@ public class Programme implements Serializable{
     
     @OneToMany(mappedBy = "programme")
     private List<BeneficiaireProgramme> beneficiaires = new ArrayList<BeneficiaireProgramme>();
+    
+    //Constructeur
 
+    public Programme() {
+        this.nom = "programmeParDefaut";
+        this.objectif = "objectif par defaut";
+    }
+    
+    
     public Long getId() {
         return id;
     }

@@ -4,10 +4,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by darextossa on 9/22/17.
- */
-
 @Entity
 @Table(name = "tp_beneficiaire")
 @DiscriminatorValue("beneficiaire")

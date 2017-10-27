@@ -14,7 +14,7 @@ public class GenerateTableTest {
     @Test
     public void generateTables() throws ParseException, SQLException{
         Persistence.generateSchema("tpJpa-mysql", new Properties());
-        ///Persistence.generateSchema("tpJpa-derby", new Properties());
+        Persistence.generateSchema("tpJpa-derby", new Properties());
     }
     
 	

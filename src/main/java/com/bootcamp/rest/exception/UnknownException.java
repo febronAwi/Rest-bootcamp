@@ -7,10 +7,9 @@ package com.bootcamp.rest.exception;
 
 import javax.ws.rs.core.Response;
 
-public class UserNotFoundException {
-     	
-	public static Response userNotFoundException() {
-            return Response.status(401).entity("Utilisateur non trouve !").build();
+
+public class UnknownException extends Exception{
+    public static Response unknownException(Exception e) {
+            return Response.status(401).entity(e).build();
 	}
-	
 }

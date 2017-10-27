@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.bootcamp.jpa.entities;
 
 import java.io.Serializable;
@@ -18,10 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-/**
- *
- * @author edwigegédéon
- */
+
 @Entity
 @Table(name = "tp_fournisseur_has_programme")
 public class FournisseurProgramme implements Serializable{
@@ -29,7 +22,7 @@ public class FournisseurProgramme implements Serializable{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
      
-     @NotNull(message="l'attribut typeDon doit ètre renseigné")
+     @NotNull(message="l'attribut typeDon doit etre renseigne")
      @Column(length = 20)
      private String typeDon;
     
