@@ -1,10 +1,6 @@
 package com.bootcamp.json.jsonClasses;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import java.io.File;
@@ -13,7 +9,7 @@ import java.util.List;
 
 /**
  *
- * @author edwigeg�d�on
+ * @Bignon
  * @param <T>
  */
 public class JsonArrayToJava<T> {
@@ -28,14 +24,4 @@ public class JsonArrayToJava<T> {
          
          return list;
     }
-    /*
-    public T converteJsonToObject(File file,Object obj) throws IOException{
-        //INSTANCIATION DE ObjectMapper
-    ObjectMapper om = new ObjectMapper(); 
-    
-         T result = om.readValue(file, obj.getClass());
-         
-         return result;
-    }
-   */
 }

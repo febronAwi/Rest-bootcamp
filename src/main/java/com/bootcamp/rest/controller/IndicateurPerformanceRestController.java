@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Bignon
  */
 package com.bootcamp.rest.controller;
 
@@ -25,15 +23,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.crypto.MacProvider;
-import java.security.Key;
-
-/**
- *
- * @author edwigegédéon
- */
 @Path("/indicateur/performance")
 public class IndicateurPerformanceRestController {
     IndicateurPerformanceRepository ipr = new IndicateurPerformanceRepository("tpJpa-mysql");

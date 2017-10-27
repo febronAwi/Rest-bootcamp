@@ -14,6 +14,7 @@ import com.bootcamp.rest.exception.TokenNotGenerateException;
 import com.bootcamp.rest.exception.TokenVerifyException;
 import com.bootcamp.rest.exception.ReturnResponse;
 import com.bootcamp.rest.exception.UnknownException;
+import com.bootcamp.rest.otherClasses.UserManager;
 import com.bootcamp.rest.security.JavaJsonWebToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.beans.IntrospectionException;
@@ -38,8 +39,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -59,7 +58,9 @@ public class ProgrammeRestController {
     
     ClassesToJson ctj = new ClassesToJson();
     
-    private RoleUser role;
+    UserManager um = new UserManager();
+    
+    //RoleUser role;
     
     @POST
     @Path("/login")
@@ -67,13 +68,15 @@ public class ProgrammeRestController {
     public Response login(User obj) throws SQLException {  
         String iat = "BootcampToken";
         long tm = 900000; // 15 min
+        User user = new User();
        
         try {
-            User user = ur.findByLoginAndPwd(obj.getLogin(), obj.getPwd());
+            user = ur.findByLoginAndPwd(obj.getLogin(), obj.getPwd());
             //
-            this.role = user.getRole();
             
             try {
+                //this.role = user.getRole();
+                um.setUser(user);
                 String subject = user.toString();
                 String token = jt.createJWT(iat, subject, tm);
                 resp = SuccessMessage.message("Retenez bien ce token: \n"+token);
@@ -83,10 +86,11 @@ public class ProgrammeRestController {
         } catch (Exception e) {
             resp = AuthentificationException.auth("Erreur lors de l'authentifiacation ! \n verifiez vos infos :  ",obj);
         }
-       return resp;
+        
+        return resp;
+        
     }
     
-
     @GET
     @Path("/all")
     public Response getAllProrammes( @HeaderParam("token") String token ) {
@@ -119,7 +123,9 @@ public class ProgrammeRestController {
         try {
            jt.parseJWT(token);
             //
-            if(this.role.equals(RoleUser.ADMIN))  {
+            try{
+            RoleUser role =  um.getUser().getRole();
+            role.equals(RoleUser.ADMIN);
                 //
                  try {
                 
@@ -128,8 +134,8 @@ public class ProgrammeRestController {
             } catch (Exception e) {
                 resp=NotCreateException.notCreateException("Erreur lors de la creation", e);
             }
-            }else {
-              resp=AuthentificationException.auth("Token Valide\n Mais Vous n'etes pas autorise a creer une instance.  Desole !! \n",role);
+            }catch(Exception e) {
+              resp=AuthentificationException.auth("Token Valide\n Mais Vous n'etes pas autorise a creer une instance.  Desole !! \n",um.getUser().getRole());
             }
                                  
         } catch (Exception e) {
@@ -161,23 +167,23 @@ public class ProgrammeRestController {
     
     @DELETE
     @Path("/delete/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response delete(Programme programme, @PathParam("id") int valeur,@HeaderParam("token") String token ) throws SQLException {
+    public Response delete(@PathParam("id") int valeur,@HeaderParam("token") String token ) throws SQLException {
         try {
            jt.parseJWT(token);
             //
-            if(this.role.equals(RoleUser.ADMIN)) {
-                
+            try {
+                RoleUser role = um.getUser().getRole();
+                role.equals(RoleUser.ADMIN);
                 try {
-                pr.findById(valeur);
+                Programme programme = pr.findById(valeur);
                 pr.delete(programme);
                 resp=SuccessMessage.message("Le programme d'id "+valeur+" a bien ete supprime");
             } catch (Exception e) {
                 resp=NotCreateException.notCreateException("Probleme lors de la suppression de programme d'id"+valeur,e);
             }
                 
-            } else {
-           resp=AuthentificationException.auth("Token Valide \n Mais Vous n'etes pas autorise a Supprimer une instance.  Desole !! \n",role);
+            } catch(Exception e) {
+           resp=AuthentificationException.auth("Token Valide \n Mais Vous n'etes pas autorise a Supprimer une instance.  Desole !! \n",um.getUser().getRole());
             }         
         } catch (Exception e) {
             resp =TokenVerifyException.tokenException(e);
@@ -233,7 +239,9 @@ public class ProgrammeRestController {
            }
        }
        return false;
-   }    
+   }
+     
+
 
 //  E X P E R I M E N T A T I O N
    

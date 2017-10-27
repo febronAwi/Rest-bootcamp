@@ -1,3 +1,7 @@
+/*
+ * Bignon
+ */
+
 
 package com.bootcamp;
 
@@ -20,12 +24,7 @@ public class JsonTest {
         Bailleur b = new Bailleur();
         //Serealisation avec la methode cree a cet effet
         c.convertObjectToJson(Bailleur.class, c);
-        
-            //DeSerealisation avec la methode cree a cet effet
-        // instanciation de la classe JsonArrayToJava
-        JsonArrayToJava<Bailleur> jtj = new JsonArrayToJava<Bailleur>();
-             //DeSerealisation avec la methode cree a cet effet
-        jtj.converteJsonArrayToObject(new File("JsonFolder/bailleur.json"), b);
+                   
     }
     
     @Test
@@ -38,10 +37,6 @@ public class JsonTest {
         //Serealisation avec la methode cree a cet effet
         c.convertObjectToJson(Programme.class, c);
         
-            //DeSerealisation avec la methode cree a cet effet
-        // instanciation de la classe JsonArrayToJava
-        JsonArrayToJava<Programme> jtj = new JsonArrayToJava<Programme>();
-             //DeSerealisation avec la methode cree a cet effet
-        jtj.converteJsonArrayToObject(new File("JsonFolder/bailleur.json"), b);
+            
     }
 }
