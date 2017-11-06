@@ -17,6 +17,9 @@ import com.bootcamp.rest.exception.UnknownException;
 import com.bootcamp.rest.otherClasses.UserManager;
 import com.bootcamp.rest.security.JavaJsonWebToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -58,28 +61,34 @@ public class ProgrammeRestController {
     
     ClassesToJson ctj = new ClassesToJson();
     
-    UserManager um = new UserManager();
-    
-    //RoleUser role;
-    
+    UserManager um = new UserManager();    
+        
     @POST
     @Path("/login")
     @Consumes("application/json")
+	@ApiOperation(
+			value="connexion",
+			notes="Vous connecter !",
+			response=User.class,
+			responseContainer="User"
+			)
+	@ApiResponses({
+	     @ApiResponse(code=201, message="Connexion avec succès"),
+	     @ApiResponse(code=404, message="impossible de ce connecter")
+	})
     public Response login(User obj) throws SQLException {  
         String iat = "BootcampToken";
         long tm = 900000; // 15 min
-        User user = new User();
-       
+       User user = new User();
         try {
             user = ur.findByLoginAndPwd(obj.getLogin(), obj.getPwd());
+            um.setUser(user);
             //
             
-            try {
-                //this.role = user.getRole();
-                um.setUser(user);
+            try {          
                 String subject = user.toString();
-                String token = jt.createJWT(iat, subject, tm);
-                resp = SuccessMessage.message("Retenez bien ce token: \n"+token);
+                jt.createJWT(iat, subject, tm);
+                resp = SuccessMessage.message("Retenez bien ce token: \n"+jt.getToken()+"\n"+user.toString());
         } catch (Exception e) {
                 resp = TokenNotGenerateException.generateTokenException();
          }
@@ -93,10 +102,21 @@ public class ProgrammeRestController {
     
     @GET
     @Path("/all")
-    public Response getAllProrammes( @HeaderParam("token") String token ) {
+	@ApiOperation(
+			value="afficher",
+			notes="Afficher la liste des programmes",
+			response=Programme.class,
+			responseContainer="Programme"
+			)
+	@ApiResponses({
+	     @ApiResponse(code=201, message="Affichage avec succès"),
+	     @ApiResponse(code=404, message="impossible d'afficher ce programme")
+	})
+    //@Produces(MediaType.APPLICATION_JSON)
+    public Response getAllProrammes() {
         
         try {
-            jt.parseJWT(token);
+            jt.parseJWT(jt.getToken());
             SuccessMessage.message("Token Valide");
             try {
                 liste = pr.findAll();
@@ -108,7 +128,7 @@ public class ProgrammeRestController {
             }
             
         } catch (Exception e) {
-            resp =TokenVerifyException.tokenException(e);
+            resp =TokenVerifyException.tokenException(jt.getToken());
          }
         return resp;
     }
@@ -117,15 +137,24 @@ public class ProgrammeRestController {
     
     @POST
     @Path("/create")
+	@ApiOperation(
+			value="create",
+			notes="Ajouter un nouveau programme",
+			response=Programme.class,
+			responseContainer="Programme"
+			)
+	@ApiResponses({
+	     @ApiResponse(code=201, message="Ajout avec succès"),
+	     @ApiResponse(code=404, message="impossible d'ajouter ce programme")
+	})
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(Programme programme, @HeaderParam("token") String token ) throws SQLException {
+    public Response create(Programme programme) throws SQLException {
         //
+        RoleUser role =  um.getUser().getRole();
         try {
-           jt.parseJWT(token);
+           jt.parseJWT(jt.getToken());          
             //
-            try{
-            RoleUser role =  um.getUser().getRole();
-            role.equals(RoleUser.ADMIN);
+            if(role.equals(RoleUser.ADMIN) == true){
                 //
                  try {
                 
@@ -134,12 +163,12 @@ public class ProgrammeRestController {
             } catch (Exception e) {
                 resp=NotCreateException.notCreateException("Erreur lors de la creation", e);
             }
-            }catch(Exception e) {
-              resp=AuthentificationException.auth("Token Valide\n Mais Vous n'etes pas autorise a creer une instance.  Desole !! \n",um.getUser().getRole());
+            }else {
+              resp=AuthentificationException.auth("Token Valide\n Mais Vous n'etes pas autorise a creer une instance.  Desole !! \n",role);
             }
                                  
         } catch (Exception e) {
-            resp =TokenVerifyException.tokenException(e);
+            resp =TokenVerifyException.tokenException(jt.getToken());
          }
         return resp;
     }
@@ -147,9 +176,19 @@ public class ProgrammeRestController {
     @PUT
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response update(Programme programme,@HeaderParam("token") String token ) throws SQLException {
+	@ApiOperation(
+			value="update",
+			notes="Mettre a jour un  programme",
+			response=Programme.class,
+			responseContainer="Programme"
+			)
+	@ApiResponses({
+	     @ApiResponse(code=201, message="update avec succès"),
+	     @ApiResponse(code=404, message="impossible de mettre a jour ce programme")
+	})
+    public Response update(Programme programme) throws SQLException {
         try {
-            jt.parseJWT(token);
+            jt.parseJWT(jt.getToken());
             resp =SuccessMessage.message("Token Valide");
             try {
                 pr.update(programme);
@@ -159,7 +198,7 @@ public class ProgrammeRestController {
             }
             
         } catch (Exception e) {
-            resp =TokenVerifyException.tokenException(e);
+            resp =TokenVerifyException.tokenException(jt.getToken());
          }
         
         return resp;
@@ -167,13 +206,23 @@ public class ProgrammeRestController {
     
     @DELETE
     @Path("/delete/{id}")
-    public Response delete(@PathParam("id") int valeur,@HeaderParam("token") String token ) throws SQLException {
+	@ApiOperation(
+			value="delete",
+			notes="Supprimer un nouveau programme",
+			response=Programme.class,
+			responseContainer="Programme"
+			)
+	@ApiResponses({
+	     @ApiResponse(code=201, message="suppression avec succès"),
+	     @ApiResponse(code=404, message="impossible de supprimer ce programme")
+	})
+    public Response delete(@PathParam("id") int valeur) throws SQLException {
+        RoleUser role = um.getUser().getRole();
         try {
-           jt.parseJWT(token);
+           jt.parseJWT(jt.getToken());          
             //
-            try {
-                RoleUser role = um.getUser().getRole();
-                role.equals(RoleUser.ADMIN);
+            if(role.equals(RoleUser.ADMIN) == true) {
+                          
                 try {
                 Programme programme = pr.findById(valeur);
                 pr.delete(programme);
@@ -182,11 +231,11 @@ public class ProgrammeRestController {
                 resp=NotCreateException.notCreateException("Probleme lors de la suppression de programme d'id"+valeur,e);
             }
                 
-            } catch(Exception e) {
-           resp=AuthentificationException.auth("Token Valide \n Mais Vous n'etes pas autorise a Supprimer une instance.  Desole !! \n",um.getUser().getRole());
+            } else {
+//           resp=AuthentificationException.auth("Token Valide \n Mais Vous n'etes pas autorise a Supprimer une instance.  Desole !! \n");
             }         
         } catch (Exception e) {
-            resp =TokenVerifyException.tokenException(e);
+            resp =TokenVerifyException.tokenException(jt.getToken());
          }
         
         return resp;    
@@ -194,9 +243,20 @@ public class ProgrammeRestController {
     
     @GET
     @Path("/{id}")
-    public Response findProgrammeByFields(@PathParam("id") long id,@QueryParam("fields") String fields,@HeaderParam("token") String token ) throws SQLException, IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
+	@ApiOperation(
+			value="afficher",
+			notes="Afficher un nouveau programme",
+			response=Programme.class,
+			responseContainer="Programme"
+			)
+	@ApiResponses({
+	     @ApiResponse(code=201, message="Affichage avec succès"),
+	     @ApiResponse(code=404, message="impossible d'afficher ce programme")
+	})
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findProgrammeByFields(@PathParam("id") long id,@QueryParam("fields") String fields) throws SQLException, IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
         try {
-           jt.parseJWT(token);
+           jt.parseJWT(jt.getToken());
             try {
         Field[] fieldsProgramme = Programme.class.getDeclaredFields();
         
@@ -225,11 +285,13 @@ public class ProgrammeRestController {
             }
             
         } catch (Exception e) {
-         resp =TokenVerifyException.tokenException(e);
+         resp =TokenVerifyException.tokenException(jt.getToken());
          }    
         
        return resp;        
     }
+    
+    
     
      private boolean check(String[] fields, String field) {
 
@@ -240,8 +302,7 @@ public class ProgrammeRestController {
        }
        return false;
    }
-     
-
+          
 
 //  E X P E R I M E N T A T I O N
    
@@ -251,6 +312,6 @@ public class ProgrammeRestController {
     public Response getList() throws IOException, SQLException  {
         liste = pr.findAll();
         return Response.status(200).entity(ctj.simpleConvertObjectToJson(liste)).build();        
-    }
+        }
     
     }

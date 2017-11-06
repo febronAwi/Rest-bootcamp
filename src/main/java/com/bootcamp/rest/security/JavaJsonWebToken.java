@@ -11,13 +11,14 @@ import java.util.Date;
 public class JavaJsonWebToken {
     
     String key = "bootkey";
+    private String tk="initie";
     
     SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
     byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(key);
     Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
     
 //Methode pour creer un JWT
-public String createJWT(String issuer, String subject, long ttlMillis) {
+public void createJWT(String issuer, String subject, long ttlMillis) {
     
 
     long nowMillis = System.currentTimeMillis();
@@ -37,7 +38,7 @@ public String createJWT(String issuer, String subject, long ttlMillis) {
         builder.setExpiration(exp);
     }
         
-    return builder.compact();
+    this.setToken(builder.compact());
 }
 
  //Methode Pour verifier un JWT 
@@ -47,8 +48,14 @@ public String createJWT(String issuer, String subject, long ttlMillis) {
      
      Jwts.parser().setSigningKey(signingKey).parseClaimsJws(token);
      
- } 
+      } 
  
-
- 
+ public void setToken(String token){
+     this.tk = token;
+ }
+  
+ public String getToken(){
+     return tk;
+ }
+  
 }

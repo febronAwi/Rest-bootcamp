@@ -14,8 +14,13 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiModel;
+import com.wordnik.swagger.annotations.ApiModelProperty;
+
 @Entity
 @Table(name ="tp_user")
+@ApiModel(value="User",description="representation d'une resource REST User")
 public class User implements Serializable{
     
     @Id
@@ -24,18 +29,15 @@ public class User implements Serializable{
    
     @NotNull(message="l'attribut login doit etre renseigne")
     @Column(length = 30)
+	@ApiModelProperty(value="nom d'utilisateur", required=true)
     private String login;
     
     @Enumerated(EnumType.STRING)
     private RoleUser roles;
     
     @Column(length = 15, nullable = true)
-    private String pwd;
-
-    public User() {
-        this.roles = RoleUser.USER;
-    }
-    
+	@ApiModelProperty(value="mot de passe", required=true)
+    private String pwd;    
     
     public Long getId() {
         return id;
@@ -71,8 +73,10 @@ public class User implements Serializable{
 
     @Override
     public String toString() {
-        return "User{" + "id=" + id + ", login=" + login + ", pwd=" + pwd + '}';
+        return "User{" + "login=" + login + ", roles=" + roles + ", pwd=" + pwd + '}';
     }
+
+   
     
     
 }
