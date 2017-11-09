@@ -44,6 +44,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import static scala.tools.cmd.Parser.token;
 
 @Path("/programme")
 public class ProgrammeRestController {
@@ -66,16 +67,7 @@ public class ProgrammeRestController {
     @POST
     @Path("/login")
     @Consumes("application/json")
-	@ApiOperation(
-			value="connexion",
-			notes="Vous connecter !",
-			response=User.class,
-			responseContainer="User"
-			)
-	@ApiResponses({
-	     @ApiResponse(code=201, message="Connexion avec succès"),
-	     @ApiResponse(code=404, message="impossible de ce connecter")
-	})
+	
     public Response login(User obj) throws SQLException {  
         String iat = "BootcampToken";
         long tm = 900000; // 15 min
@@ -83,8 +75,7 @@ public class ProgrammeRestController {
         try {
             user = ur.findByLoginAndPwd(obj.getLogin(), obj.getPwd());
             um.setUser(user);
-            //
-            
+            //            
             try {          
                 String subject = user.toString();
                 jt.createJWT(iat, subject, tm);
@@ -101,22 +92,12 @@ public class ProgrammeRestController {
     }
     
     @GET
-    @Path("/all")
-	@ApiOperation(
-			value="afficher",
-			notes="Afficher la liste des programmes",
-			response=Programme.class,
-			responseContainer="Programme"
-			)
-	@ApiResponses({
-	     @ApiResponse(code=201, message="Affichage avec succès"),
-	     @ApiResponse(code=404, message="impossible d'afficher ce programme")
-	})
+    @Path("/all")	
     //@Produces(MediaType.APPLICATION_JSON)
-    public Response getAllProrammes() {
+    public Response getAllProrammes(@HeaderParam("token") String token) {
         
         try {
-            jt.parseJWT(jt.getToken());
+            jt.parseJWT(token);
             SuccessMessage.message("Token Valide");
             try {
                 liste = pr.findAll();
@@ -137,24 +118,15 @@ public class ProgrammeRestController {
     
     @POST
     @Path("/create")
-	@ApiOperation(
-			value="create",
-			notes="Ajouter un nouveau programme",
-			response=Programme.class,
-			responseContainer="Programme"
-			)
-	@ApiResponses({
-	     @ApiResponse(code=201, message="Ajout avec succès"),
-	     @ApiResponse(code=404, message="impossible d'ajouter ce programme")
-	})
+	
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response create(Programme programme) throws SQLException {
+    public Response create(Programme programme,@HeaderParam("token") String token) throws SQLException {
         //
         RoleUser role =  um.getUser().getRole();
         try {
-           jt.parseJWT(jt.getToken());          
+           jt.parseJWT(token);          
             //
-            if(role.equals(RoleUser.ADMIN) == true){
+            
                 //
                  try {
                 
@@ -162,9 +134,6 @@ public class ProgrammeRestController {
                 resp=SuccessMessage.message("Bien cree");
             } catch (Exception e) {
                 resp=NotCreateException.notCreateException("Erreur lors de la creation", e);
-            }
-            }else {
-              resp=AuthentificationException.auth("Token Valide\n Mais Vous n'etes pas autorise a creer une instance.  Desole !! \n",role);
             }
                                  
         } catch (Exception e) {
@@ -176,19 +145,10 @@ public class ProgrammeRestController {
     @PUT
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value="update",
-			notes="Mettre a jour un  programme",
-			response=Programme.class,
-			responseContainer="Programme"
-			)
-	@ApiResponses({
-	     @ApiResponse(code=201, message="update avec succès"),
-	     @ApiResponse(code=404, message="impossible de mettre a jour ce programme")
-	})
-    public Response update(Programme programme) throws SQLException {
+	
+    public Response update(Programme programme,@HeaderParam("token") String token) throws SQLException {
         try {
-            jt.parseJWT(jt.getToken());
+            jt.parseJWT(token);
             resp =SuccessMessage.message("Token Valide");
             try {
                 pr.update(programme);
@@ -206,23 +166,12 @@ public class ProgrammeRestController {
     
     @DELETE
     @Path("/delete/{id}")
-	@ApiOperation(
-			value="delete",
-			notes="Supprimer un nouveau programme",
-			response=Programme.class,
-			responseContainer="Programme"
-			)
-	@ApiResponses({
-	     @ApiResponse(code=201, message="suppression avec succès"),
-	     @ApiResponse(code=404, message="impossible de supprimer ce programme")
-	})
-    public Response delete(@PathParam("id") int valeur) throws SQLException {
+	
+    public Response delete(@PathParam("id") int valeur,@HeaderParam("token") String token) throws SQLException {
         RoleUser role = um.getUser().getRole();
         try {
-           jt.parseJWT(jt.getToken());          
-            //
-            if(role.equals(RoleUser.ADMIN) == true) {
-                          
+           jt.parseJWT(token);          
+            //                          
                 try {
                 Programme programme = pr.findById(valeur);
                 pr.delete(programme);
@@ -231,9 +180,7 @@ public class ProgrammeRestController {
                 resp=NotCreateException.notCreateException("Probleme lors de la suppression de programme d'id"+valeur,e);
             }
                 
-            } else {
-//           resp=AuthentificationException.auth("Token Valide \n Mais Vous n'etes pas autorise a Supprimer une instance.  Desole !! \n");
-            }         
+                   
         } catch (Exception e) {
             resp =TokenVerifyException.tokenException(jt.getToken());
          }
@@ -243,20 +190,11 @@ public class ProgrammeRestController {
     
     @GET
     @Path("/{id}")
-	@ApiOperation(
-			value="afficher",
-			notes="Afficher un nouveau programme",
-			response=Programme.class,
-			responseContainer="Programme"
-			)
-	@ApiResponses({
-	     @ApiResponse(code=201, message="Affichage avec succès"),
-	     @ApiResponse(code=404, message="impossible d'afficher ce programme")
-	})
+	
     @Produces(MediaType.APPLICATION_JSON)
-    public Response findProgrammeByFields(@PathParam("id") long id,@QueryParam("fields") String fields) throws SQLException, IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
+    public Response findProgrammeByFields(@PathParam("id") long id,@QueryParam("fields") String fields, @HeaderParam("token") String token) throws SQLException, IntrospectionException, InvocationTargetException, IllegalArgumentException, IllegalAccessException {
         try {
-           jt.parseJWT(jt.getToken());
+           jt.parseJWT(token);
             try {
         Field[] fieldsProgramme = Programme.class.getDeclaredFields();
         
